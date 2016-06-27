@@ -10,7 +10,7 @@ APPLICATION_NAME = 'Google Calendar API Ruby Quickstart'
 CLIENT_SECRETS_PATH = 'client_secret.json'
 CREDENTIALS_PATH = File.join(Dir.home, '.credentials',
                              "calendar-ruby-quickstart.yaml")
-SCOPE = Google::Apis::CalendarV3::AUTH_CALENDAR_READONLY
+SCOPE = Google::Apis::CalendarV3::AUTH_CALENDAR
 
 ##
 # Ensure valid credentials, either by restoring from the saved credentials
@@ -43,15 +43,15 @@ class GoogleCalendar
     credentials
   end
 
-  def initialize
+  
   # Initialize the API
   @service = Google::Apis::CalendarV3::CalendarService.new
   @service.client_options.application_name = APPLICATION_NAME
   @service.authorization = authorize
 
-  # calendar_id = 'primary'
-  @calendar_id = 'flatironschool.com_15ii6if4tou9co9iido53p6cbs@group.calendar.google.com'
-  end
+  @calendar_id = 'primary'
+  # calendar_id = 'flatironschool.com_15ii6if4tou9co9iido53p6cbs@group.calendar.google.com'
+ 
 
   def self.get_items(day)
     @day=day
@@ -63,6 +63,7 @@ class GoogleCalendar
   private
 
   def self.calendar_items
+    # binding.pry
     @main = @service.list_events(
                                   @calendar_id,
                                  max_results: 10,
@@ -90,15 +91,52 @@ class GoogleCalendar
     events.join("\n")
   end
 
-  def self.time(day)
-    times = {'today' => 0, 'tomorrow' => 1, 'week' => 7}
-    wanted_time=(Time.now + (times[day.downcase]*86400))
-    @max_time=Time.local(wanted_time.year,wanted_time.month,wanted_time.day,23,59,59)
-      if day == 'tomorrow' 
-          @min_time=Time.local(wanted_time.year,wanted_time.month,wanted_time.day,00,00,00)
-      else
-          @min_time=Time.now
-      end
+    def self.time(day)
+     times = {'today' => 0, 'tomorrow' => 1, 'week' => 7}
+     wanted_time = (Time.now + (times[day.downcase]*86400))
+     max_time(wanted_time)
+     day == 'tomorrow' ? min_time(wanted_time) : @min_time=Time.now
+    end
+
+
+   def self.max_time(wanted_time)
+     @max_time = Time.local(wanted_time.year,wanted_time.month,wanted_time.day,23,59,59)
+   end
+
+   def self.min_time(wanted_time)
+     @min_time = Time.local(wanted_time.year,wanted_time.month,wanted_time.day,00,00,00)
+   end
+
+
+   def self.add_event
+          event = Google::Apis::CalendarV3::Event.new(
+        summary: 'Google I/O 2015',
+        location: '800 Howard St., San Francisco, CA 94103',
+        description: 'A chance to hear more about Google\'s developer products.',
+        start: {
+          date_time: '2016-06-27T09:00:00-07:00',
+          time_zone: 'America/Los_Angeles',
+        },
+        end: {
+          date_time: '2016-06-27T17:00:00-07:00',
+          time_zone: 'America/Los_Angeles',
+        },
+        recurrence: [
+          'RRULE:FREQ=DAILY;COUNT=2'
+        ],
+        reminders: {
+          use_default: false
+          # overrides: [
+          #   {method' => 'email', 'minutes: 24 * 60},
+          #   {method' => 'popup', 'minutes: 10},
+          # ],
+        },
+      )
+
+      result = @service.insert_event('primary', event)
+      "Event created: #{result.html_link}"
   end
 
 end
+
+# pry 'start'
