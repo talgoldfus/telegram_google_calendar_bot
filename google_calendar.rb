@@ -3,6 +3,7 @@ require 'googleauth'
 require 'googleauth/stores/file_token_store'
 require 'pry'
 require 'fileutils'
+require 'dates_from_string'
 
 
 OOB_URI = 'urn:ietf:wg:oauth:2.0:oob'
@@ -108,19 +109,24 @@ class GoogleCalendar
    end
 
 
-   def self.add_event
-          event = Google::Apis::CalendarV3::Event.new(
-        summary: 'Google I/O 2015',
-        location: '800 Howard St., San Francisco, CA 94103',
-        description: 'A chance to hear more about Google\'s developer products.',
+   def self.add_event(details)
+
+      event = Google::Apis::CalendarV3::Event.new(
+        summary: details[0].to_s,
+        location: details[1].to_s,
+        # description: ,
         start: {
-          date_time: '2016-06-27T09:00:00-07:00',
-          time_zone: 'America/Los_Angeles',
+
+
+          date_time: Time.parse(details[2].to_s).to_datetime.rfc3339.to_s, #'2016-06-27T09:00:00-07:00'
+          time_zone: 'America/New_York',
         },
         end: {
-          date_time: '2016-06-27T17:00:00-07:00',
-          time_zone: 'America/Los_Angeles',
+          date_time: Time.parse(details[3]).to_datetime.rfc3339.to_s , #'2016-06-27T17:00:00-07:00',
+          time_zone: 'America/New_York',
         },
+
+
         recurrence: [
           'RRULE:FREQ=DAILY;COUNT=2'
         ],
@@ -134,7 +140,7 @@ class GoogleCalendar
       )
 
       result = @service.insert_event('primary', event)
-      "Event created: #{result.html_link}"
+      return  "Event created: #{result.html_link}"
   end
 
 end
