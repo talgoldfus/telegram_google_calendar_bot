@@ -46,15 +46,13 @@ class Event
          self.next_question?
 
         bot.api.send_message(chat_id: message.chat.id, parse_mode: 'HTML',
-            text: "What is the end date and time ?")
-          
+            text: "What is the end date and time ?")    
          self.next_question?
     end
 
 
     def display
           @details.shift
-          
           result= GoogleCalendar.add_event(@details)  
           result  
     end

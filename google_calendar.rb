@@ -50,8 +50,8 @@ class GoogleCalendar
   @service.client_options.application_name = APPLICATION_NAME
   @service.authorization = authorize
 
-  @calendar_id = 'primary'
-  # calendar_id = 'flatironschool.com_15ii6if4tou9co9iido53p6cbs@group.calendar.google.com'
+  # @calendar_id = 'primary'
+  @calendar_id = 'flatironschool.com_15ii6if4tou9co9iido53p6cbs@group.calendar.google.com'
  
 
   def self.get_items(day)
@@ -140,9 +140,11 @@ class GoogleCalendar
       )
 
       result = @service.insert_event('primary', event)
-      return  "Event created: #{result.html_link}"
+      
+     
+     return  "Event created: #{result.html_link}"
   end
 
 end
 
-# pry 'start'
+ 
