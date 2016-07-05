@@ -58,7 +58,7 @@ class GoogleCalendar
     @day=day
     time(day)
     calendar_items
-    cal_items.empty? ? "No upcoming events found" : cal_items 
+    cal_items.empty? ? "It looks like you have no upcoming events" : cal_items 
   end
 
   private
@@ -110,39 +110,25 @@ class GoogleCalendar
 
 
    def self.add_event(details)
+    #details => ['Ruby meetup','Flatiron School','July 3 6PM','July 3 9PM']
 
       event = Google::Apis::CalendarV3::Event.new(
-        summary: details[0].to_s,
-        location: details[1].to_s,
-        # description: ,
+        summary: details[0].to_s, #=> 'Ruby meetup'
+        location: details[1].to_s, #=> 'Flatiron School'
         start: {
-
-
-          date_time: Time.parse(details[2].to_s).to_datetime.rfc3339.to_s, #'2016-06-27T09:00:00-07:00'
+          date_time: Time.parse(details[2]).to_datetime.rfc3339.to_s, #'July 3 6PM'=> "2016-07-03T18:00:00-04:00"
           time_zone: 'America/New_York',
         },
         end: {
-          date_time: Time.parse(details[3]).to_datetime.rfc3339.to_s , #'2016-06-27T17:00:00-07:00',
+          date_time: Time.parse(details[3]).to_datetime.rfc3339.to_s ,#'July 3 6PM'=> "2016-07-03T21:00:00-04:00" 
           time_zone: 'America/New_York',
-        },
-
-
-        recurrence: [
-          'RRULE:FREQ=DAILY;COUNT=2'
-        ],
-        reminders: {
-          use_default: false
-          # overrides: [
-          #   {method' => 'email', 'minutes: 24 * 60},
-          #   {method' => 'popup', 'minutes: 10},
-          # ],
-        },
+        }
       )
-
-      result = @service.insert_event('primary', event)
-      
+     result = @service.insert_event('primary', event)  
+     #@service = Google::Apis::CalendarV3::CalendarService.new 
      
-     return  "Event created: #{result.html_link}"
+     "Event created successfully!\nUse the following link to edit the event on Google Calendar:\n#{result.html_link}"
+    
   end
 
 end
